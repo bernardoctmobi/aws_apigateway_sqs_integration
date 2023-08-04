@@ -9,7 +9,7 @@ Globals:
     Timeout: 3
 
 Resources:
-  Function:
+  SQSProcessor:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
@@ -17,7 +17,55 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
       - x86_64
+      Events:
+        PollQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt MessageQueue.Arn
+            FunctionResponseTypes: ReportBatchItemFailures
 
-  Api:
-    Type: AWS::Serverless::Api
+  MessageQueue:
+    Type: AWS::SQS::Queue
     Properties:
+      QueueName: ExerciseQueue
+
+  SendMessageApi:
+    Type: AWS:Serverless::Api
+    Properties:
+      StageName: dev
+      DefinitionBody:
+        swagger: '2.0'
+        paths:
+          /send:
+            post:
+              responses:
+                '200':
+                  description: OK
+                '400':
+                  description: BAD REQUEST
+                '500':
+                  description: INTERNAL ERROR
+              x-amazon-apigateway-integration:
+                type: aws
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:sqs:action/SendMessage
+
+  SendMessageApiRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: SendMessagePermissionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                Resource: !GetAtt MessageQueue.Arn
