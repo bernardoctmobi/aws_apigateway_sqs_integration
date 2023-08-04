@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SqsApiGatewayIntegration
+
+  Sample SAM Template for SqsApiGatewayIntegration
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
