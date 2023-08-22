@@ -1,0 +1,20 @@
+openapi: 3.0.1
+info:
+  title: Send Message API
+  version: 1.0.0
+
+paths:
+  /send:
+    post:
+      responses:
+        200:
+          description: MESSAGE SENT
+        400:
+          description: BAD REQUEST
+        500:
+          description: INTERNAL ERROR
+      x-amazon-apigateway-integration:
+        type: aws
+        uri: {'Fn::Sub': 'arn:aws:apigateway:${AWS::Region}:sqs:action/SendMessage'}
+        credentials: {'Fn::GetAtt': [SendMessageApiRole, Arn]}
+        httpMethod: 'POST'

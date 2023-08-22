@@ -1,14 +1,28 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  SqsApiGatewayIntegration
 
-  Sample SAM Template for SqsApiGatewayIntegration
 Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  StackName:
+    Type: String
+    Default: SqsApiGatewayDirectIntegration
+  DeploymentStage:
+    Type: String
+    Default: dev
+  QueueName:
+    Type: String
+    Default: MessagesQueue
+
 Resources:
+  MessageQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName:
+        Ref: QueueName
+
   SQSProcessor:
     Type: AWS::Serverless::Function
     Properties:
@@ -22,32 +36,20 @@ Resources:
           Type: SQS
           Properties:
             Queue: !GetAtt MessageQueue.Arn
-            FunctionResponseTypes: ReportBatchItemFailures
-
-  MessageQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: ExerciseQueue
+            BatchSize: 10
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
 
   SendMessageApi:
-    Type: AWS:Serverless::Api
+    Type: AWS::Serverless::Api
     Properties:
-      StageName: dev
+      StageName:
+        Ref: DeploymentStage
       DefinitionBody:
-        swagger: '2.0'
-        paths:
-          /send:
-            post:
-              responses:
-                '200':
-                  description: OK
-                '400':
-                  description: BAD REQUEST
-                '500':
-                  description: INTERNAL ERROR
-              x-amazon-apigateway-integration:
-                type: aws
-                uri: !Sub arn:aws:apigateway:${AWS::Region}:sqs:action/SendMessage
+        'Fn::Transform':
+          Name: AWS::Include
+          Parameters:
+            Location: ./openapi.yaml
 
   SendMessageApiRole:
     Type: AWS::IAM::Role

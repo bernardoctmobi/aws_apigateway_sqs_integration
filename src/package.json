@@ -1,0 +1,9 @@
+{
+  "name": "sqs_apigateway_integration",
+  "version": "1.0.0",
+  "main": "app.js",
+  "author": "SAM CLI",
+  "license": "MIT",
+  "dependencies": {
+  }
+}
