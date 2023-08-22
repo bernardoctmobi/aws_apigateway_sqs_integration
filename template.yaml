@@ -11,10 +11,18 @@ Parameters:
     Default: dev
 
 Resources:
+  DLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: MsgQueueDLQ
+      
   MessageQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: MsgQueue
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DLQ.Arn
+        maxReceiveCount: 3
 
   SendMessageApi:
     Type: AWS::Serverless::Api
@@ -35,8 +43,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service:
-                - apigateway.amazonaws.com
+              Service: apigateway.amazonaws.com
             Action: sts:AssumeRole
       Policies:
         - PolicyName: SendMessagePermissionPolicy
