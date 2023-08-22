@@ -13,8 +13,28 @@ paths:
           description: BAD REQUEST
         500:
           description: INTERNAL ERROR
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
       x-amazon-apigateway-integration:
         type: aws
-        uri: {'Fn::Sub': 'arn:aws:apigateway:${AWS::Region}:sqs:action/SendMessage'}
+        uri:
+          Fn::Sub:
+            - 'arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${Queue}'
+            - Queue: { 'Fn::GetAtt': [ MessageQueue, QueueName ] }
         credentials: {'Fn::GetAtt': [SendMessageApiRole, Arn]}
-        httpMethod: 'POST'
+        httpMethod: POST
+        passthroughBehavior: NEVER
+        responses:
+          default:
+            statusCode: 200
+        requestParameters:
+          integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
+        requestTemplates:
+          application/json: "Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body)"

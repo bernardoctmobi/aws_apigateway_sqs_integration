@@ -6,39 +6,15 @@ Globals:
     Timeout: 3
 
 Parameters:
-  StackName:
-    Type: String
-    Default: SqsApiGatewayDirectIntegration
   DeploymentStage:
     Type: String
     Default: dev
-  QueueName:
-    Type: String
-    Default: MessagesQueue
 
 Resources:
   MessageQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName:
-        Ref: QueueName
-
-  SQSProcessor:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/
-      Handler: app.lambdaHandler
-      Runtime: nodejs18.x
-      Architectures:
-      - x86_64
-      Events:
-        PollQueue:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt MessageQueue.Arn
-            BatchSize: 10
-            FunctionResponseTypes:
-              - ReportBatchItemFailures
+      QueueName: MsgQueue
 
   SendMessageApi:
     Type: AWS::Serverless::Api
@@ -71,3 +47,21 @@ Resources:
                 Action:
                   - sqs:SendMessage
                 Resource: !GetAtt MessageQueue.Arn
+
+  SQSProcessor:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.lambdaHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      Events:
+        PollQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt MessageQueue.Arn
+            BatchSize: 10
+            Enabled: false
+            FunctionResponseTypes:
+              - ReportBatchItemFailures

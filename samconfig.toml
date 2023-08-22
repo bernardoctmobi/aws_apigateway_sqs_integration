@@ -19,7 +19,7 @@ confirm_changeset = true
 resolve_s3 = true
 s3_prefix = "SqsApiGatewayIntegration"
 region = "eu-west-1"
-parameter_overrides = "StackName=\"SqsApiGatewayDirectIntegration\" DeploymentStage=\"dev\" QueueName=\"MessagesQueue\""
+parameter_overrides = "DeploymentStage=\"dev\""
 image_repositories = []
 
 [default.package.parameters]
