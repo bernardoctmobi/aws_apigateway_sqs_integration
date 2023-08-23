@@ -13,7 +13,11 @@ export const handler = async (event) => {
 };
 
 async function createPromiseForRecord(record) {
+  console.log(record.body);
+  console.log(typeof (record.body));
   const parsedBody = JSON.parse(record.body);
+  console.log(parsedBody);
+  console.log(typeof (parsedBody));
   const result = (typeof(parsedBody.firstNumber) == "number" && typeof(parsedBody.secondNumber) == "number");
   if (!result) {
     throw record.messageId;
