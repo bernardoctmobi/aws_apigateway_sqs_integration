@@ -69,6 +69,5 @@ Resources:
           Properties:
             Queue: !GetAtt MessageQueue.Arn
             BatchSize: 10
-            Enabled: false
             FunctionResponseTypes:
               - ReportBatchItemFailures

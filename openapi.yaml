@@ -28,7 +28,7 @@ paths:
           Fn::Sub:
             - 'arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${Queue}'
             - Queue: { 'Fn::GetAtt': [ MessageQueue, QueueName ] }
-        credentials: {'Fn::GetAtt': [SendMessageApiRole, Arn]}
+        credentials: { 'Fn::GetAtt': [SendMessageApiRole, Arn] }
         httpMethod: POST
         passthroughBehavior: NEVER
         responses:
