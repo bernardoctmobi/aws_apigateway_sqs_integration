@@ -18,10 +18,8 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                message:
-                  type: string
+              $ref: '#/components/schemas/sendMsgSchema'
+
       x-amazon-apigateway-integration:
         type: aws
         uri:
@@ -38,3 +36,11 @@ paths:
           integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
         requestTemplates:
           application/json: Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body).replaceAll("\\","")
+
+components:
+  schemas:
+    sendMsgSchema:
+      type: object
+      properties:
+        message:
+          type: string
