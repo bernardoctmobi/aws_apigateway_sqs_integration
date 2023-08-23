@@ -6,20 +6,31 @@ Globals:
     Timeout: 3
 
 Parameters:
+  StackName:
+    Type: String
+    Default: SqsApiGatewayIntegration
   DeploymentStage:
     Type: String
     Default: dev
+  DLQName:
+    Type: String
+    Default: MsgQueueDLQ
+  SQSName:
+    Type: String
+    Default: MsgQueue
 
 Resources:
   DLQ:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: MsgQueueDLQ
+      QueueName:
+        Ref: DLQName
       
   MessageQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: MsgQueue
+      QueueName:
+        Ref: SQSName        
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt DLQ.Arn
         maxReceiveCount: 3
