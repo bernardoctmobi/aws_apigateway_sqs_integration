@@ -3,8 +3,12 @@ export const handler = async (event) => {
   
   const promisesArray = records.map(record => createPromiseForRecord(record));
   const results = await Promise.allSettled(promisesArray);
-  const rejectedRecords = results.filter((item) => item.status === "rejected");
-  const batchItemFailures = rejectedRecords.map(item => ({itemIdentifier:item.reason}));
+  // const rejectedRecords = results.filter((item) => item.status === "rejected");
+  // const batchItemFailures = rejectedRecords.map(item => ({ itemIdentifier: item.reason }));
+  
+  const batchItemFailures = results.filter(
+    (item) => item.status === "rejected").map(
+    item => ({ itemIdentifier: item.reason }));
   console.log(batchItemFailures);
   return {batchItemFailures};
 };
