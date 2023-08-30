@@ -3,6 +3,11 @@ info:
   title: Send Message API
   version: 1.0.0
 
+x-amazon-apigateway-request-validators:
+  RequestModelPayload:
+    validateRequestParameters: true
+    validateRequestBody: true
+
 paths:
   /send:
     post:
@@ -19,7 +24,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/sendMsgSchema"
-
+      x-amazon-apigateway-request-validator: "RequestModelPayload"
       x-amazon-apigateway-integration:
         type: aws
         uri:
@@ -41,6 +46,12 @@ components:
   schemas:
     sendMsgSchema:
       type: object
+      required:
+        - firstNumber
+        - secondNumber
       properties:
-        message:
-          type: string
+        firstNumber:
+          type: number
+        secondNumber:
+          type: number
+      additionalProperties: false
