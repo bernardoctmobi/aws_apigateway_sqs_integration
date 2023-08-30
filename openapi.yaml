@@ -18,15 +18,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/sendMsgSchema'
+              $ref: "#/components/schemas/sendMsgSchema"
 
       x-amazon-apigateway-integration:
         type: aws
         uri:
           Fn::Sub:
-            - 'arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${Queue}'
-            - Queue: { 'Fn::GetAtt': [ MessageQueue, QueueName ] }
-        credentials: { 'Fn::GetAtt': [SendMessageApiRole, Arn] }
+            - "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${Queue}"
+            - Queue: { "Fn::GetAtt": [MessageQueue, QueueName] }
+        credentials: { "Fn::GetAtt": [SendMessageApiRole, Arn] }
         httpMethod: POST
         passthroughBehavior: NEVER
         responses:
@@ -35,7 +35,7 @@ paths:
         requestParameters:
           integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
         requestTemplates:
-          application/json: Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body).replaceAll("\\","")
+          application/json: Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body).replaceAll("\\n", "").replaceAll("\\r", "").replaceAll("\\"", """)
 
 components:
   schemas:
